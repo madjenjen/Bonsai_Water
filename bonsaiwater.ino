@@ -1,5 +1,3 @@
-#include <ArduinoJson.h>
-
 int pump = A0;
 int light = 13;
 int sensor = A1;

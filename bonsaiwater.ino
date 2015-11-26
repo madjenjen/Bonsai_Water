@@ -129,58 +129,6 @@ void sendWaterMessage(String message)
     }
     i++;
   }
-  Serial.println("Done");
-
-  
-
-  /*String cmd = "AT+CIPSTART=\"TCP\",\"";
-  cmd += DST_IP;
-  cmd += "\",80";
-  Serial2.println(cmd);
-  if(Serial2.find("Error")) return;
-  cmd = "GET /api/v1/get?key=";
-  cmd += API_KEY;
-  cmd += "&clientId=";
-  cmd += CLIENT_ID;
-  cmd += " HTTP/1.0\r\n\r\n";
-  
-  if(Serial2.find(">")){
-    Serial.print(">");
-  }else{
-    Serial2.println("AT+CIPCLOSE");
-    Serial.println("connection timeout");
-    delay(1000);
-    return;
-  }
-  Serial2.println(cmd);
-  unsigned int i = 0; //timeout counter
-  int n = 1; // char counter
-  char json[100]="{";
-  while (!Serial2.find("{")){
-    if (Serial2.read()==-1){break;}
-  }
-  while (i<6000) {
-    if(Serial2.available()) {
-      char c = Serial2.read();
-      json[n]=c;
-      n++;
-      i=0;
-    }
-    i++;
-  }
-  StaticJsonBuffer<200> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject(json);
-  boolean success_ok = root["success"];
-    
-  if(success_ok) {
-    JsonObject& message = root["message"];
-    boolean op = message["open"];
-    int microseconds;
-    if (op) {
-      microseconds = 1700;
-    } else {
-      microseconds = 1300;
-    }*/
 }
 
 void software_Reset() {// Restarts program from beginning but does not reset the peripherals and registers

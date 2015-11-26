@@ -100,9 +100,9 @@ void sendWaterMessage(String message)
   cmd += "&channel=";
   cmd += CHANNEL;
   cmd += " HTTP/1.0\r\n\r\n";
-  Serial.println(req);
+  Serial.println(cmd);
   Serial2.print("AT+CIPSEND=");
-  Serial2.println(req.length());
+  Serial2.println(cmd.length());
   if(Serial2.find(">")) {
     Serial.print(">");
   } else {
@@ -111,7 +111,7 @@ void sendWaterMessage(String message)
     delay(1000);
     return;
   }
-  Serial2.println(req);
+  Serial2.println(cmd);
 
   unsigned int i = 0; //timeout counter
   while (i<6000) {

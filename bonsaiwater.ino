@@ -21,7 +21,6 @@ void setup() {
     Serial.println("WiFi - Module is ready");
   }else{
     Serial.println("Module dosn't respond.");
-    //while(1);
   }
   delay(1000);
   // try to connect to wifi
@@ -43,7 +42,6 @@ void setup() {
 
 
 void loop() {
-  // read the input on analog pin 0:
   int sensorValue = analogRead(sensor); 
      
   if (sensorValue >=600){
@@ -117,8 +115,6 @@ void sendWaterMessage(String message)
   Serial2.println(req);
 
   unsigned int i = 0; //timeout counter
-  //int n = 1; // char counter
-  //char json[100]="{";
   while (i<6000) {
     if(Serial2.available()) {
       char c = Serial2.read();

@@ -42,8 +42,8 @@ void setup() {
 
 
 void loop() {
-  int sensorValue = analogRead(sensor); 
-     
+  int sensorValue = analogRead(sensor);
+
   if (sensorValue >=600){
     Serial.println(sensorValue);
     digitalWrite(pump, HIGH);
@@ -127,6 +127,5 @@ void sendWaterMessage(String message)
 }
 
 void software_Reset() {// Restarts program from beginning but does not reset the peripherals and registers
-  asm volatile ("  jmp 0");  
-}  
-
+  asm volatile ("  jmp 0");
+}

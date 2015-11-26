@@ -1,10 +1,12 @@
+#include <ArduinoJson.h>
+
 int pump = A0;
 int light = 13;
 int sensor = A1;
 
 //For wifi
-#include <ArduinoJson.h>
-#include "config.h"
+#include <ArduinoJson.h>;
+#include "config.h";
 
 void setup() {
   // initialize serial communication at 9600 bits per second:

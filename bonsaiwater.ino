@@ -90,19 +90,18 @@ boolean connectWiFi()
 void sendWaterMessage(String message)
 {
   Serial.println("Connecting...");
-  String data="payload={\"text\":\""+message+"\"}";
   String cmd = "AT+CIPSTART=\"TCP\",\"";
-  cmd += "192.168.0.15";
-  cmd += "\",3000";
-  Serial.println(cmd);
+  cmd += DST_IP;
+  cmd += "\",80";
   Serial2.println(cmd);
-  String req = "POST / HTTP/1.0/r/n/r/n";
-  req += "Content-Type: application/json/r/n";
-  req += "Host: 192.168.0.15/r/n";
-  req += "Content-Length: ";
-  req += data.length();
-  req += "/r/n/r/n";
-  req += data;
+  if(Serial2.find("Error")) return;
+  cmd = "GET /api/v1/slack?key=";
+  cmd += API_KEY;
+  cmd += "&message=";
+  cmd += message;
+  cmd += "&channel=";
+  cmd += CHANNEL;
+  cmd += " HTTP/1.0\r\n\r\n";
   Serial.println(req);
   Serial2.print("AT+CIPSEND=");
   Serial2.println(req.length());

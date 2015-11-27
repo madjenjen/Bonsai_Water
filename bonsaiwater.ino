@@ -5,6 +5,7 @@ char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 
 #include <ArduinoJson.h>; //For wifi
 #include "config.h";
+#include <Time.h>
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
@@ -43,7 +44,19 @@ void setup() {
 
 void loop() {
   int sensorValue = analogRead(sensor);
-
+  //Convert int to char for messsage
+  char sensorValueChar[4]; //The sensor reading will be 3 characters long, so array has to be 4 long
+  String sensorValueStr;
+  sensorValueStr = String(sensorValue);
+  sensorValueStr.toCharArray(sensorValueChar,2);
+ 
+  
+  if (minute() == 0){
+    char statusMessage[120];
+    strcpy(statusMessage, "Your bonsai's soil is currently at ");
+    strcat(statusMessage, sensorValueChar);
+    sendWaterMessage(statusMessage);
+  }
   if (sensorValue >=600){
     Serial.println(sensorValue);
     digitalWrite(pump, HIGH);

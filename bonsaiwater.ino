@@ -1,9 +1,9 @@
 int pump = A0;
 int light = 13;
 int sensor = A1;
+char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 
-//For wifi
-#include <ArduinoJson.h>;
+#include <ArduinoJson.h>; //For wifi
 #include "config.h";
 
 void setup() {
@@ -50,7 +50,7 @@ void loop() {
     digitalWrite(light, HIGH);
     Serial.print("Set pump: ");
     Serial.println(digitalRead(pump));
-    sendWaterMessage("Watering plant");
+    sendWaterMessage("Bonsai H2GO!");
   }
   else{
     Serial.println(sensorValue);
@@ -85,7 +85,7 @@ boolean connectWiFi()
     }
 }
 
-void sendWaterMessage(String message)
+void sendWaterMessage(char* message)
 {
   Serial.println("Connecting...");
   String cmd = "AT+CIPSTART=\"TCP\",\"";
@@ -96,7 +96,9 @@ void sendWaterMessage(String message)
   cmd = "GET /api/v1/slack?key=";
   cmd += API_KEY;
   cmd += "&message=";
-  cmd += message;
+  char encoded_message[120];
+  *urlencode(encoded_message ,message);
+  cmd += encoded_message;
   cmd += "&channel=";
   cmd += CHANNEL;
   cmd += " HTTP/1.0\r\n\r\n";
@@ -124,6 +126,28 @@ void sendWaterMessage(String message)
     }
     i++;
   }
+}
+
+static char hex_digit(char b) //For URL encoding
+{  
+  return "01234567890ABCDEF"[b & 0x0F];
+}
+
+char *urlencode(char *dst,char *src) //For URL encoding
+{  
+  char b;
+  char *d = dst;
+  while (b = *src++)
+  {  
+    if (strchr(specials,b))
+    {  *d++ = '%';
+       *d++ = hex_digit(b >> 4);
+       b = hex_digit(b);
+    }
+    *d++ = b;
+   }
+   *d = '\0';
+   return dst;
 }
 
 void software_Reset() {// Restarts program from beginning but does not reset the peripherals and registers

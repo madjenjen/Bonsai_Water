@@ -1,5 +1,3 @@
-
-
 int pump = A0;
 int light = 13;
 int sensor = A1;
@@ -21,25 +19,16 @@ void setup() {
   //For wifi
   Serial2.begin(115200);
   Serial2.setTimeout(5000);
-  Serial.println("Init");
-  delay(1000);
-  if(Serial2.find("ready")) {
-    Serial.println("WiFi - Module is ready");
-  }else{
-    Serial.println("Module dosn't respond.");
-  }
   delay(1000);
   // try to connect to wifi
   boolean connected=false;
   for(int i=0;i<5;i++){
     if(connectWiFi()){
       connected = true;
-      Serial.println("Connected to WiFi...");
       break;
     }
   }
   if (!connected){
-    Serial.println("Coudn't connect to WiFi.");
     while(1);
   }
   delay(5000);
@@ -51,13 +40,11 @@ void loop() {
   Alarm.delay(1000);
    
   if (sensorValue >=600){
-    Serial.println(sensorValue);
     digitalWrite(pump, HIGH);
     digitalWrite(light, HIGH);
     sendWaterMessage("Bonsai H2GO!");
   }
   else{
-    Serial.println(sensorValue);
     digitalWrite(pump, LOW);
     digitalWrite(light, LOW);
   }
@@ -73,14 +60,11 @@ boolean connectWiFi()
   cmd+="\",\"";
   cmd+=PASS;
   cmd+="\"";
-  Serial.println(cmd);
   Serial2.println(cmd);
   delay(2000);
   if(Serial2.find("OK")){
-    Serial.println("OK, Connected to WiFi.");
     return true;
   }else{
-    Serial.println("Can not connect to the WiFi.");
     return false;
   }
   if (!Serial2.available()){
@@ -91,7 +75,6 @@ boolean connectWiFi()
 
 void sendWaterMessage(char* message)
 {
-  Serial.println("Connecting...");
   String cmd = "AT+CIPSTART=\"TCP\",\"";
   cmd += DST_IP;
   cmd += "\",80";
@@ -108,30 +91,15 @@ void sendWaterMessage(char* message)
   cmd += "&channel=";
   cmd += encoded_channel;
   cmd += " HTTP/1.0\r\n\r\n";
-  Serial.println(cmd);
   Serial2.print("AT+CIPSEND=");
   Serial2.println(cmd.length());
-  if(Serial2.find(">")) {
-    Serial.print(">");
-  } else {
+  if(Serial2.find(">")) {} 
+  else {
     Serial2.println("AT+CIPCLOSE");
-    Serial.println("connection timeout");
     delay(1000);
     return;
   }
   Serial2.println(cmd);
-
-  unsigned int i = 0; //timeout counter
-  while (i<6000) {
-    if(Serial2.available()) {
-      char c = Serial2.read();
-      Serial.print(c);
-      //json[n]=c;
-      //n++;
-      i=0;
-    }
-    i++;
-  }
 }
 
 void sendStatusMessage(){
@@ -140,7 +108,7 @@ void sendStatusMessage(){
   char sensorValueChar[4]; //The sensor reading will be 3 characters long, so array has to be 4 long
   String sensorValueStr;
   sensorValueStr = String(sensorValue);
-  sensorValueStr.toCharArray(sensorValueChar,4);
+  sensorValueStr.toCharArray(sensorValueChar,4); //Add chars to the end of the array
   char statusMessage[120];
   strcpy(statusMessage, "Your bonsai's soil is currently at ");
   strcat(statusMessage, sensorValueChar);
@@ -171,5 +139,5 @@ char *urlencode(char *dst,char *src) //For URL encoding
 }
 
 void software_Reset() {// Restarts program from beginning but does not reset the peripherals and registers
-  asm volatile ("  jmp 0");
-}
+  asm volatile ("  jmp 0");  
+}  

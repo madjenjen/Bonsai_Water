@@ -1,3 +1,5 @@
+
+
 int pump = A0;
 int light = 13;
 int sensor = A1;
@@ -6,12 +8,15 @@ char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 #include <ArduinoJson.h>; //For wifi
 #include "config.h";
 #include <Time.h>
+#include <TimeAlarms.h>
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
   pinMode(pump, OUTPUT);
   pinMode(light, OUTPUT);
   Serial.begin(9600);
+  setTime(2,56,0,11,28,15); 
+  Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   //For wifi
   Serial2.begin(115200);
@@ -43,20 +48,8 @@ void setup() {
 
 void loop() {
   int sensorValue = analogRead(sensor);
-  //Convert int to char for messsage
-  char sensorValueChar[4]; //The sensor reading will be 3 characters long, so array has to be 4 long
-  String sensorValueStr;
-  sensorValueStr = String(sensorValue);
-  sensorValueStr.toCharArray(sensorValueChar,2);
- 
-  
-  if (minute() == 0 && second() >= 2){
-    char statusMessage[120];
-    strcpy(statusMessage, "Your bonsai's soil is currently at ");
-    strcat(statusMessage, sensorValueChar);
-    strcat(statusMessage, ". I will water it once it goes above 600.");
-    sendWaterMessage(statusMessage);
-  }
+  Alarm.delay(1000);
+   
   if (sensorValue >=600){
     Serial.println(sensorValue);
     digitalWrite(pump, HIGH);
@@ -139,6 +132,20 @@ void sendWaterMessage(char* message)
     }
     i++;
   }
+}
+
+void sendStatusMessage(){
+  int sensorValue = analogRead(sensor);
+   //Convert int to char for messsage
+  char sensorValueChar[4]; //The sensor reading will be 3 characters long, so array has to be 4 long
+  String sensorValueStr;
+  sensorValueStr = String(sensorValue);
+  sensorValueStr.toCharArray(sensorValueChar,4);
+  char statusMessage[120];
+  strcpy(statusMessage, "Your bonsai's soil is currently at ");
+  strcat(statusMessage, sensorValueChar);
+  strcat(statusMessage, ". I will water it once it goes above 600.");
+  sendWaterMessage(statusMessage);
 }
 
 static char hex_digit(char b) //For URL encoding

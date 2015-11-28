@@ -41,7 +41,6 @@ void setup() {
   Serial2.println("AT+CIPMUX=0"); // set to single connection mode
 }
 
-
 void loop() {
   int sensorValue = analogRead(sensor);
   //Convert int to char for messsage
@@ -51,18 +50,17 @@ void loop() {
   sensorValueStr.toCharArray(sensorValueChar,2);
  
   
-  if (minute() == 0){
+  if (minute() == 0 && second() >= 2){
     char statusMessage[120];
     strcpy(statusMessage, "Your bonsai's soil is currently at ");
     strcat(statusMessage, sensorValueChar);
+    strcat(statusMessage, ". I will water it once it goes above 600.");
     sendWaterMessage(statusMessage);
   }
   if (sensorValue >=600){
     Serial.println(sensorValue);
     digitalWrite(pump, HIGH);
     digitalWrite(light, HIGH);
-    Serial.print("Set pump: ");
-    Serial.println(digitalRead(pump));
     sendWaterMessage("Bonsai H2GO!");
   }
   else{
@@ -112,8 +110,10 @@ void sendWaterMessage(char* message)
   char encoded_message[120];
   *urlencode(encoded_message ,message);
   cmd += encoded_message;
+  char encoded_channel[120];
+  *urlencode(encoded_channel ,CHANNEL);
   cmd += "&channel=";
-  cmd += CHANNEL;
+  cmd += encoded_channel;
   cmd += " HTTP/1.0\r\n\r\n";
   Serial.println(cmd);
   Serial2.print("AT+CIPSEND=");

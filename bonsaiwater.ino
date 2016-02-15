@@ -1,21 +1,27 @@
 int pump = A0;
 int light = 13;
-int sensor = A1;
+int sensor = 2;
 char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 
 #include <ArduinoJson.h>; //For wifi
 #include "config.h";
 #include <Time.h>
 #include <TimeAlarms.h>
+#include <Wire.h>
 
 void setup() {
-  // initialize serial communication at 9600 bits per second:
+  Wire.begin();
   pinMode(pump, OUTPUT);
   pinMode(light, OUTPUT);
+  pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(2,56,0,11,28,15); 
+  setTime(4,38,0,2,15,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
+  digitalWrite(sensor, LOW);
+  digitalWrite(sensor, HIGH);
+  writeI2CRegister8bit(0x20, 3);
+  
   //For wifi
   Serial2.begin(115200);
   Serial2.setTimeout(5000);
@@ -36,10 +42,10 @@ void setup() {
 }
 
 void loop() {
-  int sensorValue = analogRead(sensor);
+  int sensorValue = readI2CRegister16bit(0x20, 0);
   Alarm.delay(1000);
    
-  if (sensorValue >=600){
+  if (sensorValue <=300){
     digitalWrite(pump, HIGH);
     digitalWrite(light, HIGH);
     sendWaterMessage("Bonsai H2GO!");
@@ -48,7 +54,7 @@ void loop() {
     digitalWrite(pump, LOW);
     digitalWrite(light, LOW);
   }
-  delay(1000);
+  delay(10000);
 }
 
 //For wifi
@@ -71,6 +77,23 @@ boolean connectWiFi()
     delay(5000);
     software_Reset();
     }
+}
+
+void writeI2CRegister8bit(int addr, int value) {
+  Wire.beginTransmission(addr);
+  Wire.write(value);
+  Wire.endTransmission();
+}
+
+unsigned int readI2CRegister16bit(int addr, int reg) {
+  Wire.beginTransmission(addr);
+  Wire.write(reg);
+  Wire.endTransmission();
+  delay(1100);
+  Wire.requestFrom(addr, 2);
+  unsigned int t = Wire.read() << 8;
+  t = t | Wire.read();
+  return t;
 }
 
 void sendWaterMessage(char* message)

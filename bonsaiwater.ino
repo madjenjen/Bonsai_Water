@@ -15,7 +15,7 @@ void setup() {
   pinMode(light, OUTPUT);
   pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(4,38,0,2,15,16); 
+  setTime(7,54,0,3,6,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   digitalWrite(sensor, LOW);
@@ -27,11 +27,36 @@ void setup() {
   Serial2.setTimeout(5000);
   delay(1000);
   // try to connect to wifi
+  Serial2.println("AT+RST");
+  Serial.println("Resetting module");
+  if(Serial2.find("OK")){
+    Serial.println("OK");
+  }
+  Serial2.flush();
+  if(Serial2.find("ready"))
+  {
+    Serial.println("Module is ready");
+  }
+  else
+  {
+    Serial.println("Module not responding.");
+    while(1);
+  }
+  delay(1000);
+  
   boolean connected=false;
   for(int i=0;i<5;i++){
     if(connectWiFi()){
       connected = true;
-      break;
+      Serial2.println("AT+CWJAP?");
+      if(Serial2.find("OK")){
+        Serial.println("Ok, connected to WiFi");
+        break;
+      }
+      else{
+        Serial.println("Cannot connect to WiFi");
+        while(1);
+      }
     }
   }
   if (!connected){
@@ -44,7 +69,7 @@ void setup() {
 void loop() {
   int sensorValue = readI2CRegister16bit(0x20, 0);
   Alarm.delay(1000);
-   
+  Serial.println(sensorValue);
   if (sensorValue <=300){
     digitalWrite(pump, HIGH);
     digitalWrite(light, HIGH);
@@ -67,16 +92,22 @@ boolean connectWiFi()
   cmd+=PASS;
   cmd+="\"";
   Serial2.println(cmd);
+  Serial.println(cmd);
   delay(2000);
-  if(Serial2.find("OK")){
+  
+  if(Serial2.find("WIFI")){
     return true;
-  }else{
+  }
+  else{
+    Serial.println("Cannot connect to WiFi");
     return false;
   }
   if (!Serial2.available()){
+    Serial.println("Serial 2 not available");
     delay(5000);
     software_Reset();
     }
+    Serial.println("Finished");
 }
 
 void writeI2CRegister8bit(int addr, int value) {

@@ -15,7 +15,7 @@ void setup() {
   pinMode(light, OUTPUT);
   pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(1,10,0,4,10,16); 
+  setTime(1,15,0,4,10,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   digitalWrite(sensor, LOW);

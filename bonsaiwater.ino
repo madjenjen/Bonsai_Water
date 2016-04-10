@@ -15,7 +15,7 @@ void setup() {
   pinMode(light, OUTPUT);
   pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(7,54,0,3,6,16); 
+  setTime(1,10,0,4,10,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   digitalWrite(sensor, LOW);
@@ -166,7 +166,7 @@ void sendStatusMessage(){
   char statusMessage[120];
   strcpy(statusMessage, "Your bonsai's soil is currently at ");
   strcat(statusMessage, sensorValueChar);
-  strcat(statusMessage, ". I will water it once it goes above 600.");
+  strcat(statusMessage, ". I will water it once it goes below 300.");
   sendWaterMessage(statusMessage);
 }
 

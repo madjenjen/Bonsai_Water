@@ -15,7 +15,7 @@ void setup() {
   pinMode(light, OUTPUT);
   pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(1,15,0,4,10,16); 
+  setTime(7,33,0,4,11,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   digitalWrite(sensor, LOW);
@@ -131,7 +131,8 @@ void sendWaterMessage(char* message)
 {
   String cmd = "AT+CIPSTART=\"TCP\",\"";
   cmd += DST_IP;
-  cmd += "\",80";
+  cmd += "\",";
+  cmd += PORT;
   Serial2.println(cmd);
   if(Serial2.find("Error")) return;
   cmd = "GET /api/v1/slack?key=";

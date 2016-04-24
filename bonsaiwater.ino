@@ -70,7 +70,7 @@ void loop() {
   int sensorValue = readI2CRegister16bit(0x20, 0);
   Alarm.delay(1000);
   Serial.println(sensorValue);
-  if (sensorValue <=300){
+  if (sensorValue <= 450){
     digitalWrite(pump, HIGH);
     digitalWrite(light, HIGH);
     sendWaterMessage("Bonsai H2GO!");
@@ -135,9 +135,9 @@ void sendWaterMessage(char* message)
   cmd += PORT;
   Serial2.println(cmd);
   if(Serial2.find("Error")) return;
-  cmd = "GET /api/v1/slack?key=";
+  cmd = "GET /api/slack?apiKey=";
   cmd += API_KEY;
-  cmd += "&message=";
+  cmd += "&text=";
   char encoded_message[120];
   *urlencode(encoded_message ,message);
   cmd += encoded_message;
@@ -155,6 +155,7 @@ void sendWaterMessage(char* message)
     return;
   }
   Serial2.println(cmd);
+  Serial.println(cmd);
 }
 
 void sendStatusMessage(){

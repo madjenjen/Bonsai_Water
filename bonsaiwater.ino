@@ -1,4 +1,4 @@
-int pump = A0;
+int pump = 9 ;
 int light = 13;
 int sensor = 2;
 char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
@@ -7,7 +7,7 @@ char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 #include "config.h";
 #include <Time.h>
 #include <TimeAlarms.h>
-#include <Wire.h>
+#include <Wire.h>  
 
 void setup() {
   Wire.begin();
@@ -70,13 +70,13 @@ void loop() {
   int sensorValue = readI2CRegister16bit(0x20, 0);
   Alarm.delay(1000);
   Serial.println(sensorValue);
-  if (sensorValue <= 450){
-    digitalWrite(pump, HIGH);
+  if (sensorValue <= 300){
+    analogWrite(pump, 100);
     digitalWrite(light, HIGH);
     sendWaterMessage("Bonsai H2GO!");
   }
   else{
-    digitalWrite(pump, LOW);
+    analogWrite(pump, 0);
     digitalWrite(light, LOW);
   }
   delay(10000);

@@ -3,6 +3,8 @@ int light = 13;
 int sensor = 2;
 char specials[] = "$&+,/:;=?@ <>#%{}|~[]`"; //For URL encoding
 
+int wateringPoint = 300;
+
 #include <ArduinoJson.h>; //For wifi
 #include "config.h";
 #include <Time.h>
@@ -70,7 +72,7 @@ void loop() {
   int sensorValue = readI2CRegister16bit(0x20, 0);
   Alarm.delay(1000);
   Serial.println(sensorValue);
-  if (sensorValue <= 300){
+  if (sensorValue <= wateringPoint){
     analogWrite(pump, 100);
     digitalWrite(light, HIGH);
     sendWaterMessage("Bonsai H2GO!");
@@ -165,10 +167,18 @@ void sendStatusMessage(){
   String sensorValueStr;
   sensorValueStr = String(sensorValue);
   sensorValueStr.toCharArray(sensorValueChar,4); //Add chars to the end of the array
+  
+  char wateringPointValueChar[4]; //The watering point will be 3 characters long, so array has to be 4 long
+  String wateringPointValueStr;
+  wateringPointValueStr = String(wateringPoint);
+  wateringPointValueStr.toCharArray(wateringPointValueChar,4); //Add chars to the end of the array
+  
   char statusMessage[120];
   strcpy(statusMessage, "Your bonsai's soil is currently at ");
   strcat(statusMessage, sensorValueChar);
-  strcat(statusMessage, ". I will water it once it goes below 300.");
+  strcat(statusMessage, ". I will water it once it goes below");
+  strcat(statusMessage, wateringPointValueChar);
+  strcat(statusMessage, ".");
   sendWaterMessage(statusMessage);
 }
 

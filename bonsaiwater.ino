@@ -17,7 +17,7 @@ void setup() {
   pinMode(light, OUTPUT);
   pinMode(sensor, OUTPUT);
   Serial.begin(9600);
-  setTime(7,33,0,4,11,16); 
+  setTime(6,27,0,10,06,16); 
   Alarm.timerRepeat(3600, sendStatusMessage); //send message every hour
 
   digitalWrite(sensor, LOW);
@@ -161,7 +161,7 @@ void sendWaterMessage(char* message)
 }
 
 void sendStatusMessage(){
-  int sensorValue = analogRead(sensor);
+  int sensorValue = readI2CRegister16bit(0x20, 0);
    //Convert int to char for messsage
   char sensorValueChar[4]; //The sensor reading will be 3 characters long, so array has to be 4 long
   String sensorValueStr;
@@ -176,7 +176,7 @@ void sendStatusMessage(){
   char statusMessage[120];
   strcpy(statusMessage, "Your bonsai's soil is currently at ");
   strcat(statusMessage, sensorValueChar);
-  strcat(statusMessage, ". I will water it once it goes below");
+  strcat(statusMessage, ". I will water it once it goes below ");
   strcat(statusMessage, wateringPointValueChar);
   strcat(statusMessage, ".");
   sendWaterMessage(statusMessage);
